@@ -20,8 +20,8 @@ const notoNastaliq = Noto_Nastaliq_Urdu({
 });
 
 export const metadata: Metadata = {
-  title: "SAATHI — Your Digital Guardian",
-  description: "SAATHI checks suspicious messages and lets you loop in someone you trust before you act.",
+  title: "ScamWatch — Your Digital Guardian",
+  description: "ScamWatch checks suspicious messages and lets you loop in someone you trust before you act.",
 };
 
 export const viewport: Viewport = {

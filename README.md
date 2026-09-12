@@ -1,9 +1,10 @@
-# SAATHI — Your Digital Guardian Against Scams & Deepfakes
+# ScamWatch — Your Digital Guardian Against Scams & Deepfakes
 
 Hackathon MVP for Social Nova Hackathon 2026 ("The Digital Shield"). Full PRD at
-[`../SAATHI_PRD.md`](../SAATHI_PRD.md).
+[`../SAATHI_PRD.md`](../SAATHI_PRD.md) (original planning doc, kept under its
+original filename).
 
-SAATHI doesn't try to be a perfect deepfake/scam detector. It watches for risk
+ScamWatch doesn't try to be a perfect deepfake/scam detector. It watches for risk
 signals in a message, explains the risk in plain language (never a confidence
 score), and — when risk is medium/high — lets the user loop in a trusted human
 ("Guardian") who sees a minimal evidence card and makes the call.

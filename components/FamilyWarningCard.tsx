@@ -27,7 +27,7 @@ export default function FamilyWarningCard({ open, onClose, analysis }: Props) {
       `*${t("fraudAlertWarning")}*\n\n` +
       `${analysis.plainLanguageReason}\n\n` +
       (bullets ? `${bullets}\n\n` : "") +
-      `— SAATHI`
+      `— ScamWatch`
     );
   }
 
@@ -41,7 +41,7 @@ export default function FamilyWarningCard({ open, onClose, analysis }: Props) {
           setBusy(false);
           return;
         }
-        const file = new File([blob], "saathi-fraud-alert.png", { type: "image/png" });
+        const file = new File([blob], "scamwatch-fraud-alert.png", { type: "image/png" });
         const canShareFiles = "canShare" in navigator && navigator.canShare?.({ files: [file] });
 
         if (canShareFiles && navigator.share) {
@@ -53,7 +53,7 @@ export default function FamilyWarningCard({ open, onClose, analysis }: Props) {
         } else {
           const link = document.createElement("a");
           link.href = URL.createObjectURL(blob);
-          link.download = "saathi-fraud-alert.png";
+          link.download = "scamwatch-fraud-alert.png";
           link.click();
           URL.revokeObjectURL(link.href);
         }
@@ -122,7 +122,7 @@ export default function FamilyWarningCard({ open, onClose, analysis }: Props) {
                   </ul>
                 )}
                 <p className="mt-4 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                  Checked with SAATHI — Your Digital Guardian
+                  Checked with ScamWatch — Your Digital Guardian
                 </p>
               </div>
             </div>

@@ -7,7 +7,7 @@ export interface PendingAnalysis {
   repeatedPattern?: boolean;
 }
 
-const KEY = "saathi:pendingAnalysis";
+const KEY = "scamwatch:pendingAnalysis";
 
 export function savePendingAnalysis(p: PendingAnalysis) {
   try {

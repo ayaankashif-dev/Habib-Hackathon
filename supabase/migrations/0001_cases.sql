@@ -1,4 +1,4 @@
--- SAATHI: cases table (Victim <-> Guardian relay + risk-analysis persistence)
+-- ScamWatch: cases table (Victim <-> Guardian relay + risk-analysis persistence)
 --
 -- Run this once in the Supabase SQL Editor for your project:
 -- https://supabase.com/dashboard/project/nfpwitwhscxawksrkvwj/sql/new

@@ -170,7 +170,7 @@ export default function CaseWaitingPage() {
               {/* WhatsApp 1-tap share */}
               <a
                 href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
-                  `Assalam-o-Alaikum! Please review this suspicious message request for me on SAATHI:\n${guardianUrl}`,
+                  `Assalam-o-Alaikum! Please review this suspicious message request for me on ScamWatch:\n${guardianUrl}`,
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"

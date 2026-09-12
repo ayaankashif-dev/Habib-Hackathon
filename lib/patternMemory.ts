@@ -6,7 +6,7 @@ import type { RiskLevel } from "./types";
 // device, capped to a small rolling window. This is a supplementary notice
 // only — it never changes the actual risk verdict, which stays fully
 // explained by the engine's own signals/reason for this specific message.
-const STORAGE_KEY = "saathi:seenRiskyPatterns";
+const STORAGE_KEY = "scamwatch:seenRiskyPatterns";
 const MAX_ENTRIES = 30;
 const SIMILARITY_THRESHOLD = 0.6;
 

@@ -2,7 +2,7 @@ import type { Lang } from "./types";
 
 // Illustrative awareness content for the home-screen ticker — NOT a live feed
 // of verified statistics. Framed as community/awareness reporting rather
-// than certified figures, consistent with SAATHI never asserting false
+// than certified figures, consistent with ScamWatch never asserting false
 // precision (see PRD §14.1's "never a confidence percentage" principle).
 export const THREAT_FEED: Record<Lang, string[]> = {
   en: [

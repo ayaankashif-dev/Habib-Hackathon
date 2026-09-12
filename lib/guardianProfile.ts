@@ -4,7 +4,7 @@ export interface GuardianProfile {
   whatsapp: string;
 }
 
-const STORAGE_KEY = "saathi:guardianProfile";
+const STORAGE_KEY = "scamwatch:guardianProfile";
 
 /** Normalizes common Pakistani phone formats (0300..., +92300..., 92300...) to a bare "92XXXXXXXXXX". */
 export function normalizePakPhone(raw: string): string {

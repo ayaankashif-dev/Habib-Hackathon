@@ -7,7 +7,7 @@ type Dict = Record<string, string>;
 
 export const translations: Record<Lang, Dict> = {
   en: {
-    appName: "SAATHI",
+    appName: "ScamWatch",
     tagline: "You don't need to be a tech expert to be safe.",
     intakeTitle: "Got a message that feels off?",
     intakeSubtitle: "Paste it here. We'll check it for you.",
@@ -69,7 +69,7 @@ export const translations: Record<Lang, Dict> = {
     setupRequired: "Backend setup needed: run the one-time Supabase SQL step (see README) and reload.",
     playVerdict: "Play out loud",
     languageLabel: "Language",
-    footerNote: "SAATHI is a decision-protection assistant, not a legal or financial authority.",
+    footerNote: "ScamWatch is a decision-protection assistant, not a legal or financial authority.",
     aiUnavailable: "Couldn't fully analyze — please ask your trusted person.",
     home: "Home",
     repeatedPatternNotice: "You've seen a message like this before on this device.",
@@ -95,7 +95,7 @@ export const translations: Record<Lang, Dict> = {
     removeGuardian: "Remove",
     askOnWhatsAppTemplate: "Ask {name} on WhatsApp",
     warnFamilyGroup: "Warn Family Group",
-    fraudAlertTitle: "SAATHI Fraud Alert",
+    fraudAlertTitle: "ScamWatch Fraud Alert",
     fraudAlertWarning: "Do not send money or share OTPs",
     shareAsImage: "Share as Image",
     shareAsText: "Share as Text",
@@ -116,7 +116,7 @@ export const translations: Record<Lang, Dict> = {
       "Numbers as publicly listed. If unreachable, ask your bank/provider for their current fraud line.",
   },
   ur: {
-    appName: "ساتھی",
+    appName: "ScamWatch",
     tagline: "محفوظ رہنے کے لیے آپ کو ماہر بننے کی ضرورت نہیں۔",
     intakeTitle: "کوئی مشکوک پیغام ملا؟",
     intakeSubtitle: "یہاں لگائیں، ہم آپ کے لیے چیک کرتے ہیں۔",
@@ -177,7 +177,7 @@ export const translations: Record<Lang, Dict> = {
     caseNotFound: "یہ کیس نہیں ملا۔",
     playVerdict: "بلند آواز سے سنیں",
     languageLabel: "زبان",
-    footerNote: "ساتھی ایک فیصلہ-حفاظتی معاون ہے، قانونی یا مالی ادارہ نہیں۔",
+    footerNote: "ScamWatch ایک فیصلہ-حفاظتی معاون ہے، قانونی یا مالی ادارہ نہیں۔",
     aiUnavailable: "پوری طرح جانچ نہیں ہو سکی — براہ کرم اپنے قابلِ اعتماد شخص سے پوچھیں۔",
     home: "گھر",
     repeatedPatternNotice: "آپ اس ڈیوائس پر پہلے بھی ایسا پیغام دیکھ چکے ہیں۔",
@@ -203,7 +203,7 @@ export const translations: Record<Lang, Dict> = {
     removeGuardian: "ہٹا دیں",
     askOnWhatsAppTemplate: "{name} سے واٹس ایپ پر پوچھیں",
     warnFamilyGroup: "خاندانی گروپ کو خبردار کریں",
-    fraudAlertTitle: "ساتھی فراڈ الرٹ",
+    fraudAlertTitle: "ScamWatch فراڈ الرٹ",
     fraudAlertWarning: "پیسے نہ بھیجیں یا او ٹی پی شیئر نہ کریں",
     shareAsImage: "تصویر کے طور پر بھیجیں",
     shareAsText: "متن کے طور پر بھیجیں",
@@ -222,7 +222,7 @@ export const translations: Record<Lang, Dict> = {
     helplineDisclaimer: "نمبر عوامی فہرست کے مطابق ہیں۔ اگر رابطہ نہ ہو تو اپنے بینک/ادارے سے موجودہ فراڈ لائن پوچھیں۔",
   },
   "roman-ur": {
-    appName: "SAATHI",
+    appName: "ScamWatch",
     tagline: "Mehfooz rehne ke liye expert banna zaroori nahi.",
     intakeTitle: "Koi mashkook message mila?",
     intakeSubtitle: "Yahan paste karein, hum aapke liye check karte hain.",
@@ -283,7 +283,7 @@ export const translations: Record<Lang, Dict> = {
     caseNotFound: "Yeh case nahi mila.",
     playVerdict: "Bulund awaaz mein sunein",
     languageLabel: "Zabaan",
-    footerNote: "SAATHI ek faisla-hifazati madadgar hai, qanooni ya maali idara nahi.",
+    footerNote: "ScamWatch ek faisla-hifazati madadgar hai, qanooni ya maali idara nahi.",
     aiUnavailable: "Poori tarah jaanch nahi ho saki — apne trusted person se poochein.",
     home: "Home",
     repeatedPatternNotice: "Aapne pehle bhi aisa message is device par dekha hai.",
@@ -309,7 +309,7 @@ export const translations: Record<Lang, Dict> = {
     removeGuardian: "Hata dein",
     askOnWhatsAppTemplate: "{name} se WhatsApp par poochein",
     warnFamilyGroup: "Family Group ko Warn Karein",
-    fraudAlertTitle: "SAATHI Fraud Alert",
+    fraudAlertTitle: "ScamWatch Fraud Alert",
     fraudAlertWarning: "Paise na bhejein ya OTP share na karein",
     shareAsImage: "Image ke taur par share karein",
     shareAsText: "Text ke taur par share karein",
@@ -337,7 +337,7 @@ interface LanguageContextValue {
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
 
-const STORAGE_KEY = "saathi:lang";
+const STORAGE_KEY = "scamwatch:lang";
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [lang, setLangState] = useState<Lang>("roman-ur");

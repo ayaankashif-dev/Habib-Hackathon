@@ -8,12 +8,12 @@ import type { AnalysisResult, Case, CaseStatus, InputType } from "./types";
 // on this server instance gets pushed the instant a decision lands, without
 // polling. See supabase/migrations/0001_cases.sql for the schema.
 declare global {
-  var __saathiEmitter: EventEmitter | undefined;
+  var __scamwatchEmitter: EventEmitter | undefined;
 }
 
-const emitter: EventEmitter = globalThis.__saathiEmitter ?? new EventEmitter();
+const emitter: EventEmitter = globalThis.__scamwatchEmitter ?? new EventEmitter();
 emitter.setMaxListeners(0);
-globalThis.__saathiEmitter = emitter;
+globalThis.__scamwatchEmitter = emitter;
 
 export class StoreNotConfiguredError extends Error {
   constructor() {
