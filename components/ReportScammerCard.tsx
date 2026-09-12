@@ -11,6 +11,7 @@ interface ReportScammerCardProps {
   messageSnippet: string;
   riskScore: number;
   scamType?: string;
+  onReported?: (report: any) => void;
 }
 
 export default function ReportScammerCard({
@@ -18,6 +19,7 @@ export default function ReportScammerCard({
   messageSnippet,
   riskScore,
   scamType,
+  onReported,
 }: ReportScammerCardProps) {
   const { user } = useAuth();
   const [contact, setContact] = useState(initialContact);
@@ -35,7 +37,7 @@ export default function ReportScammerCard({
     setLoading(true);
     setError(null);
     try {
-      await submitScamReport({
+      const rep = await submitScamReport({
         contact: contact.trim(),
         messageSnippet,
         riskScore,
@@ -43,6 +45,9 @@ export default function ReportScammerCard({
         reportedBy: user?.email || user?.displayName || "Anonymous User",
       });
       setSubmitted(true);
+      if (onReported) {
+        onReported(rep);
+      }
     } catch (err: any) {
       setError("Failed to submit report. Please try again.");
     } finally {

@@ -18,7 +18,7 @@ import {
   Filter,
   Users,
 } from "lucide-react";
-import { fetchRecentScamReports, type ScamReport } from "@/lib/scamReports";
+import { fetchRecentScamReports, subscribeToScamReports, type ScamReport } from "@/lib/scamReports";
 import ReportScammerCard from "@/components/ReportScammerCard";
 
 // Initial known scam templates in Pakistan to guarantee immediate utility
@@ -77,30 +77,33 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function loadReports() {
-      try {
-        const liveReports = await fetchRecentScamReports(50);
-        if (liveReports && liveReports.length > 0) {
-          // Merge live reports with seed scams avoiding duplicate contacts
-          const seen = new Set<string>();
-          const combined: ScamReport[] = [];
-          
-          for (const r of [...liveReports, ...SEED_SCAMS]) {
-            const key = r.contact.toLowerCase().replace(/[^a-z0-9]/g, "");
-            if (!seen.has(key)) {
-              seen.add(key);
-              combined.push(r);
-            }
-          }
-          setReports(combined);
+    const unsubscribe = subscribeToScamReports((liveReports) => {
+      const seen = new Set<string>();
+      const combined: ScamReport[] = [];
+
+      // 1. Live real-time reports from Firestore first!
+      for (const r of liveReports) {
+        const key = r.contact.toLowerCase().replace(/[^a-z0-9]/g, "");
+        if (!seen.has(key)) {
+          seen.add(key);
+          combined.push(r);
         }
-      } catch (err) {
-        console.warn("Could not load reports:", err);
-      } finally {
-        setLoading(false);
       }
-    }
-    loadReports();
+
+      // 2. Pre-seeded known scams next
+      for (const r of SEED_SCAMS) {
+        const key = r.contact.toLowerCase().replace(/[^a-z0-9]/g, "");
+        if (!seen.has(key)) {
+          seen.add(key);
+          combined.push(r);
+        }
+      }
+
+      setReports(combined);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
   }, []);
 
   const filteredReports = reports.filter((r) => {
@@ -170,6 +173,10 @@ export default function DashboardPage() {
               messageSnippet="Direct manual report from community user."
               riskScore={85}
               scamType="Manual Community Submission"
+              onReported={(newRep) => {
+                setReports((prev) => [newRep, ...prev.filter((x) => x.id !== newRep.id)]);
+                setTimeout(() => setShowReportForm(false), 2500);
+              }}
             />
           </div>
         )}

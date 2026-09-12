@@ -1,4 +1,13 @@
-import { collection, doc, setDoc, getDocs, query, orderBy, limit } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  setDoc,
+  getDocs,
+  query,
+  orderBy,
+  limit,
+  onSnapshot,
+} from "firebase/firestore";
 import { db } from "./firebaseClient";
 
 export interface ScamReport {
@@ -15,8 +24,7 @@ export interface ScamReport {
 
 export function detectContactType(contact: string): "phone" | "email" | "handle" {
   if (contact.includes("@")) return "email";
-  // If it has digits and plus or starts with 03 or is digits
-  if (/[0-9]/.test(contact) && (contact.length >= 4)) return "phone";
+  if (/[0-9]/.test(contact) && contact.length >= 4) return "phone";
   return "handle";
 }
 
@@ -54,7 +62,7 @@ export async function submitScamReport(params: {
 }
 
 /**
- * Fetch latest scam reports for the public safety dashboard
+ * Fetch latest scam reports once
  */
 export async function fetchRecentScamReports(maxReports: number = 50): Promise<ScamReport[]> {
   try {
@@ -72,5 +80,42 @@ export async function fetchRecentScamReports(maxReports: number = 50): Promise<S
   } catch (err) {
     console.warn("Could not fetch scam reports from Firestore:", err);
     return [];
+  }
+}
+
+/**
+ * Real-time listener for live updates on the Scam Radar dashboard
+ */
+export function subscribeToScamReports(
+  callback: (reports: ScamReport[]) => void,
+  maxReports: number = 50
+): () => void {
+  try {
+    const q = query(
+      collection(db, "scam_reports"),
+      orderBy("reportedAt", "desc"),
+      limit(maxReports)
+    );
+
+    const unsubscribe = onSnapshot(
+      q,
+      (snap) => {
+        const live: ScamReport[] = [];
+        snap.forEach((d) => {
+          live.push(d.data() as ScamReport);
+        });
+        callback(live);
+      },
+      (err) => {
+        console.warn("Real-time scam reports error, falling back to one-time fetch:", err);
+        fetchRecentScamReports(maxReports).then(callback);
+      }
+    );
+
+    return unsubscribe;
+  } catch (err) {
+    console.warn("Could not attach real-time listener:", err);
+    fetchRecentScamReports(maxReports).then(callback);
+    return () => {};
   }
 }
