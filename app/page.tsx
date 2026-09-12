@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -10,18 +11,24 @@ import {
   ClipboardPaste,
   FileAudio,
   Loader2,
+  LogIn,
+  LogOut,
   Mic,
+  Radio,
   ShieldCheck,
   Sparkles,
   Square,
   Trash2,
   UploadCloud,
+  User,
   UserRoundCog,
 } from "lucide-react";
 import LanguageToggle from "@/components/LanguageToggle";
 import GuardianSettingsModal from "@/components/GuardianSettingsModal";
 import AudioGuidance from "@/components/AudioGuidance";
 import ThreatTicker from "@/components/ThreatTicker";
+import NotificationBanner from "@/components/NotificationBanner";
+import { useAuth } from "@/lib/authContext";
 import { useLang } from "@/lib/i18n";
 import { demoScenarios } from "@/lib/demoScenarios";
 import { savePendingAnalysis } from "@/lib/session";
@@ -51,7 +58,14 @@ function getSpeechRecognition(): (new () => SpeechRecognitionLike) | null {
 
 export default function Home() {
   const { t, lang } = useLang();
+  const { user, loading, logout } = useAuth();
   const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.replace("/login");
+    }
+  }, [user, loading, router]);
 
   const [activeTab, setActiveTab] = useState<"text" | "screenshot" | "voice">("text");
   const [text, setText] = useState("");
@@ -60,6 +74,7 @@ export default function Home() {
   const [busy, setBusy] = useState<"none" | "checking" | "ocr" | "listening" | "transcribing">("none");
   const [error, setError] = useState<string | null>(null);
   const [copiedNotification, setCopiedNotification] = useState(false);
+  const [senderContact, setSenderContact] = useState("");
   const [showGuardianSettings, setShowGuardianSettings] = useState(false);
   const [guardianProfile, setGuardianProfile] = useState<GuardianProfile | null>(null);
 
@@ -178,7 +193,13 @@ export default function Home() {
       });
       const analysis = await res.json();
       const repeatedPattern = checkAndRecordPattern(text, analysis.riskLevel);
-      savePendingAnalysis({ text, inputType, analysis, repeatedPattern });
+      savePendingAnalysis({
+        text,
+        inputType,
+        analysis,
+        repeatedPattern,
+        senderContact: senderContact.trim() || undefined,
+      });
       router.push("/verdict");
     } catch {
       setError(t("aiUnavailable"));
@@ -187,31 +208,80 @@ export default function Home() {
     }
   }
 
-  return (
-    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-4 py-6 sm:py-10">
-      {/* Top Header Bar */}
-      <motion.header
-        initial={{ opacity: 0, y: -16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="flex items-center justify-between gap-3"
-      >
-        <div className="flex items-center gap-3.5">
-          <motion.div
-            whileHover={{ scale: 1.05, rotate: 5 }}
-            whileTap={{ scale: 0.95 }}
-            className="flex h-13 w-13 items-center justify-center rounded-2xl bg-gradient-to-tr from-slate-950 via-slate-900 to-indigo-950 text-white shadow-md ring-1 ring-white/20"
-          >
-            <ShieldCheck aria-hidden className="h-7 w-7 text-emerald-400" />
-          </motion.div>
-          <div>
-            <h1 className="text-2xl font-black tracking-tight text-slate-950">{t("appName")}</h1>
-            <p className="text-xs font-semibold text-slate-500">{t("tagline")}</p>
-          </div>
-        </div>
+  if (loading) {
+    return (
+      <main className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-slate-400" />
+      </main>
+    );
+  }
 
-        <LanguageToggle />
-      </motion.header>
+  if (!user) {
+    return null;
+  }
+
+  return (
+    <>
+      <NotificationBanner />
+      <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-4 py-6 sm:py-10">
+        {/* Top Header Bar */}
+        <motion.header
+          initial={{ opacity: 0, y: -16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="flex items-center justify-between gap-3"
+        >
+          <div className="flex items-center gap-3.5">
+            <motion.div
+              whileHover={{ scale: 1.05, rotate: 5 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex h-13 w-13 items-center justify-center rounded-2xl bg-gradient-to-tr from-slate-950 via-slate-900 to-indigo-950 text-white shadow-md ring-1 ring-white/20"
+            >
+              <ShieldCheck aria-hidden className="h-7 w-7 text-emerald-400" />
+            </motion.div>
+            <div>
+              <h1 className="text-2xl font-black tracking-tight text-slate-950">{t("appName")}</h1>
+              <p className="text-xs font-semibold text-slate-500">{t("tagline")}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center gap-1.5 rounded-full bg-red-50 text-red-700 hover:bg-red-100 border border-red-200/80 px-3 py-1.5 text-xs font-bold transition shadow-2xs"
+            >
+              <Radio className="w-3.5 h-3.5 animate-pulse text-red-600" />
+              <span className="hidden sm:inline">Scam Radar</span>
+            </Link>
+            <LanguageToggle />
+            {user ? (
+              <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
+                <div
+                  title={user.email || user.displayName || "User"}
+                  className="h-8 w-8 rounded-full bg-slate-900 text-white flex items-center justify-center text-xs font-bold"
+                >
+                  {user.displayName ? user.displayName[0].toUpperCase() : (user.email ? user.email[0].toUpperCase() : <User className="w-4 h-4" />)}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => logout()}
+                  title="Log out"
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition cursor-pointer"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="inline-flex items-center gap-1.5 rounded-full bg-slate-900 px-3.5 py-2 text-xs font-bold text-white shadow-sm hover:bg-slate-800 transition"
+              >
+                <LogIn className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Sign In</span>
+              </Link>
+            )}
+          </div>
+        </motion.header>
 
       {/* Utility bar: audio welcome + saved trusted-person shortcut */}
       <motion.div
@@ -523,6 +593,23 @@ export default function Home() {
           )}
         </AnimatePresence>
 
+        {/* Optional Sender Origin Input */}
+        <div className="mt-4 rounded-2xl bg-slate-100/80 p-3.5 border border-slate-200/80">
+          <label className="block text-xs font-bold text-slate-700 mb-1">
+            Sender Number or Email <span className="text-slate-400 font-normal">(Optional)</span>
+          </label>
+          <input
+            type="text"
+            value={senderContact}
+            onChange={(e) => setSenderContact(e.target.value)}
+            placeholder="e.g. 0300 1234567, 8171, or scammer@fakebank.com"
+            className="w-full px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+          />
+          <p className="text-[11px] text-slate-500 mt-1">
+            If this message is identified as a scam, we can save this sender to help alert others on the Scam Radar.
+          </p>
+        </div>
+
         {/* Primary CTA Check Button */}
         <motion.button
           type="button"
@@ -615,7 +702,7 @@ export default function Home() {
         onClose={() => setShowGuardianSettings(false)}
         onSaved={() => setGuardianProfile(loadGuardianProfile())}
       />
-    </main>
+      </main>
+    </>
   );
 }
-

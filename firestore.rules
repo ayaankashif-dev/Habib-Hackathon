@@ -1,0 +1,26 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Cases collection: readable and writable by anyone so victims and guardians
+    // can relay decisions in real-time, even before sign-in.
+    match /cases/{caseId} {
+      allow read, write: if true;
+    }
+
+    // FCM tokens collection: registration for push notifications
+    match /fcm_tokens/{tokenId} {
+      allow read, write: if true;
+    }
+
+    // User profiles collection
+    match /users/{userId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Community Scam Reports & Fake Numbers/Emails directory
+    match /scam_reports/{reportId} {
+      allow read, write: if true;
+    }
+  }
+}

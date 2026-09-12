@@ -19,6 +19,7 @@ import RiskCard from "@/components/RiskCard";
 import WhyFlagged from "@/components/WhyFlagged";
 import FamilyWarningCard from "@/components/FamilyWarningCard";
 import HelplinesModal from "@/components/HelplinesModal";
+import ReportScammerCard from "@/components/ReportScammerCard";
 import { useLang } from "@/lib/i18n";
 import { clearPendingAnalysis, loadPendingAnalysis, type PendingAnalysis } from "@/lib/session";
 import { buildWhatsAppLink, loadGuardianProfile, type GuardianProfile } from "@/lib/guardianProfile";
@@ -123,6 +124,16 @@ export default function VerdictPage() {
       <RiskCard signals={pending.analysis.signals} />
 
       <WhyFlagged signals={pending.analysis.signals} />
+
+      {/* Community Report Prompt for Scam Numbers/Emails */}
+      {pending.analysis.riskLevel !== "SAFE" && (
+        <ReportScammerCard
+          initialContact={pending.senderContact || ""}
+          messageSnippet={pending.text}
+          riskScore={pending.analysis.riskLevel === "STOP" ? 95 : 65}
+          scamType={pending.analysis.plainLanguageReason}
+        />
+      )}
 
       {/* Recommended Action Card */}
       <motion.div

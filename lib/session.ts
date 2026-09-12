@@ -5,6 +5,7 @@ export interface PendingAnalysis {
   inputType: InputType;
   analysis: AnalysisResult;
   repeatedPattern?: boolean;
+  senderContact?: string;
 }
 
 const KEY = "scamwatch:pendingAnalysis";

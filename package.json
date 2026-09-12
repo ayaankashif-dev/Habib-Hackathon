@@ -9,7 +9,9 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.116.0",
+    "@opentelemetry/api": "^1.9.1",
+    "firebase": "^12.19.0",
+    "firebase-admin": "^14.4.0",
     "framer-motion": "^13.2.0",
     "html2canvas": "^1.4.1",
     "lucide-react": "^1.45.0",
