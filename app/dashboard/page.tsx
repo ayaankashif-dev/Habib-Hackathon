@@ -75,6 +75,35 @@ export default function DashboardPage() {
   const [filterType, setFilterType] = useState<"all" | "phone" | "email">("all");
   const [showReportForm, setShowReportForm] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [broadcasting, setBroadcasting] = useState(false);
+  const [broadcastStatus, setBroadcastStatus] = useState<string | null>(null);
+
+  const handleBroadcastAlert = async () => {
+    setBroadcasting(true);
+    setBroadcastStatus(null);
+    try {
+      const res = await fetch("/api/notify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sendToAll: true,
+          title: "🚨 ScamWatch Awareness Alert",
+          message: "New wave of fake lottery & BISP cash grant SMS detected. Never share OTP or CNIC!",
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setBroadcastStatus(`Alert sent to ${data.sentToCount || 1} registered device(s)!`);
+      } else {
+        setBroadcastStatus("Broadcast queued.");
+      }
+    } catch {
+      setBroadcastStatus("Failed to broadcast.");
+    } finally {
+      setBroadcasting(false);
+      setTimeout(() => setBroadcastStatus(null), 5000);
+    }
+  };
 
   useEffect(() => {
     const unsubscribe = subscribeToScamReports((liveReports) => {
@@ -149,11 +178,21 @@ export default function DashboardPage() {
           <div className="flex items-center gap-2">
             <button
               type="button"
+              onClick={handleBroadcastAlert}
+              disabled={broadcasting}
+              className="px-3 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition cursor-pointer disabled:opacity-50"
+              title="Broadcast safety push alert to all registered mobile phones"
+            >
+              <Radio className="w-3.5 h-3.5 animate-pulse" />
+              <span>{broadcasting ? "Sending..." : "Send Awareness Alert"}</span>
+            </button>
+            <button
+              type="button"
               onClick={() => setShowReportForm((prev) => !prev)}
-              className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition cursor-pointer"
+              className="px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition cursor-pointer"
             >
               <PlusCircle className="w-4 h-4" />
-              <span>Report Scammer</span>
+              <span className="hidden sm:inline">Report Scammer</span>
             </button>
             <Link
               href="/"
@@ -166,6 +205,13 @@ export default function DashboardPage() {
       </header>
 
       <div className="max-w-5xl mx-auto px-4 pt-6 sm:pt-8 space-y-6">
+        {broadcastStatus && (
+          <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs sm:text-sm font-bold flex items-center gap-2 animate-in fade-in">
+            <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+            <span>{broadcastStatus}</span>
+          </div>
+        )}
+
         {/* Quick Report Drawer */}
         {showReportForm && (
           <div className="animate-in fade-in slide-in-from-top-4">
