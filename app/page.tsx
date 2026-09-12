@@ -205,12 +205,7 @@ export default function Home() {
             <ShieldCheck aria-hidden className="h-7 w-7 text-emerald-400" />
           </motion.div>
           <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-black tracking-tight text-slate-950">{t("appName")}</h1>
-              <span className="rounded-full bg-emerald-100/80 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-emerald-800 ring-1 ring-emerald-300/60">
-                PRO MAX
-              </span>
-            </div>
+            <h1 className="text-2xl font-black tracking-tight text-slate-950">{t("appName")}</h1>
             <p className="text-xs font-semibold text-slate-500">{t("tagline")}</p>
           </div>
         </div>
