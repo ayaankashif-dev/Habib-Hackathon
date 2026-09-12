@@ -25,6 +25,7 @@ export class StoreNotConfiguredError extends Error {
 
 export interface NewCaseInput {
   inputType: InputType;
+  rawInputRef?: string;
   analysis: AnalysisResult;
   guardianEvidenceSummary: string;
 }
@@ -39,7 +40,7 @@ export async function createCase(input: NewCaseInput): Promise<Case> {
     id,
     createdAt: now,
     inputType: input.inputType,
-    rawInputRef: "not-stored",
+    rawInputRef: input.rawInputRef ?? "",
     analysis: input.analysis,
     guardianEvidenceSummary: input.guardianEvidenceSummary,
     status: "awaiting_guardian",

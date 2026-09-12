@@ -18,10 +18,32 @@ body {
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
 
-/* Low-literacy / accessibility baseline: big, obvious, high-contrast tap targets. */
+/* Low-literacy / accessibility baseline: big, obvious, high-contrast tap targets.
+   44px touch target on mobile to prevent layout blowouts, scaling to 54px on tablet/desktop. */
 .tap-target {
-  min-height: 54px;
-  min-width: 54px;
+  min-height: 44px;
+  min-width: 44px;
+}
+
+@media (min-width: 640px) {
+  .tap-target {
+    min-height: 54px;
+    min-width: 54px;
+  }
+}
+
+/* Safe area insets for mobile notches & PWA navigation */
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.pl-safe {
+  padding-left: env(safe-area-inset-left, 0px);
+}
+.pr-safe {
+  padding-right: env(safe-area-inset-right, 0px);
 }
 
 .font-urdu {

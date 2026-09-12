@@ -1,5 +1,5 @@
 // ScamWatch Unified PWA Service Worker & Push Notification Handler
-const CACHE_VERSION = "scamwatch-v1.0.0";
+const CACHE_VERSION = "scamwatch-v1.0.1";
 const PRECACHE_CACHE = `precache-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `runtime-${CACHE_VERSION}`;
 
@@ -187,6 +187,35 @@ try {
 } catch (fcmErr) {
   console.warn("[sw.js] FCM scripts could not be loaded or initialized:", fcmErr);
 }
+
+// Fallback native push event listener (ensures Android mobile displays notification reliably)
+self.addEventListener("push", (event) => {
+  let title = "ScamWatch Security Alert";
+  let body = "New security alert received.";
+  let data = {};
+
+  if (event.data) {
+    try {
+      const payload = event.data.json();
+      title = payload.notification?.title || payload.data?.title || title;
+      body = payload.notification?.body || payload.data?.body || payload.data?.message || body;
+      data = payload.data || {};
+    } catch {
+      body = event.data.text() || body;
+    }
+  }
+
+  const options = {
+    body,
+    icon: "/icons/icon-192x192.png",
+    badge: "/icons/icon-192x192.png",
+    vibrate: [200, 100, 200, 100, 200],
+    data,
+    requireInteraction: true,
+  };
+
+  event.waitUntil(self.registration.showNotification(title, options));
+});
 
 // Handle notification tap
 self.addEventListener("notificationclick", (event) => {

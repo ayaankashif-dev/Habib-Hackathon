@@ -65,7 +65,13 @@ export default function VerdictPage() {
       const res = await fetch("/api/relay", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ analysis: pending.analysis, inputType: pending.inputType, lang }),
+        body: JSON.stringify({
+          analysis: pending.analysis,
+          inputType: pending.inputType,
+          lang,
+          rawInputRef: pending.text,
+          messageText: pending.text,
+        }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -75,13 +81,21 @@ export default function VerdictPage() {
       }
 
       if (guardianProfile) {
-        const guardianUrl = `${window.location.origin}/guardian/${data.caseId}`;
-        const message =
-          lang === "ur"
-            ? `السلام علیکم! براہ کرم میرے لیے یہ پیغام چیک کریں:\n${guardianUrl}`
-            : lang === "roman-ur"
-              ? `Assalam-o-Alaikum! Please mere liye yeh message check karein:\n${guardianUrl}`
-              : `Assalam-o-Alaikum! Please check this message for me:\n${guardianUrl}`;
+        const guardianUrl = data.guardianUrl
+          ? `${window.location.origin}${data.guardianUrl}`
+          : `${window.location.origin}/guardian/${data.caseId}?msg=${encodeURIComponent(pending.text)}`;
+        const preview = pending.text ? (pending.text.length > 120 ? `${pending.text.slice(0, 120)}...` : pending.text) : "";
+        const message = preview
+          ? (lang === "ur"
+              ? `السلام علیکم! مجھے یہ پیغام ملا ہے:\n"${preview}"\n\nبراہ کرم چیک کریں کہ یہ محفوظ ہے یا فراڈ:\n${guardianUrl}`
+              : lang === "roman-ur"
+                ? `Assalam-o-Alaikum! Mujhe yeh message aaya tha:\n"${preview}"\n\nPlease check karein ke yeh safe hai ya fraud:\n${guardianUrl}`
+                : `Assalam-o-Alaikum! I received this message:\n"${preview}"\n\nPlease check if it is safe or a scam:\n${guardianUrl}`)
+          : (lang === "ur"
+              ? `السلام علیکم! براہ کرم میرے لیے یہ پیغام چیک کریں:\n${guardianUrl}`
+              : lang === "roman-ur"
+                ? `Assalam-o-Alaikum! Please mere liye yeh message check karein:\n${guardianUrl}`
+                : `Assalam-o-Alaikum! Please check this message for me:\n${guardianUrl}`);
         window.open(buildWhatsAppLink(guardianProfile.whatsapp, message), "_blank");
       }
 

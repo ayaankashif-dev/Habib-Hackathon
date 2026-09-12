@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
+import { useParams, useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { CheckCircle2, Loader2, ShieldQuestion } from "lucide-react";
 import LanguageToggle from "@/components/LanguageToggle";
@@ -9,8 +9,10 @@ import GuardianDecisionCard from "@/components/GuardianDecisionCard";
 import { useLang } from "@/lib/i18n";
 import type { Case } from "@/lib/types";
 
-export default function GuardianReviewPage() {
+function GuardianReviewContent() {
   const { caseId } = useParams<{ caseId: string }>();
+  const searchParams = useSearchParams();
+  const queryMsg = searchParams.get("msg") || undefined;
   const { t, lang } = useLang();
 
   const [c, setC] = useState<Case | null>(null);
@@ -76,6 +78,7 @@ export default function GuardianReviewPage() {
   }
 
   const resolved = c.status === "resolved_safe" || c.status === "resolved_stop";
+  const exactMessage = (c.rawInputRef && c.rawInputRef !== "not-stored" ? c.rawInputRef : null) || queryMsg;
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col items-center gap-6 px-4 py-6 sm:py-10">
@@ -139,10 +142,30 @@ export default function GuardianReviewPage() {
             </p>
           </motion.div>
         ) : (
-          <GuardianDecisionCard key="decide" summary={c.guardianEvidenceSummary} onDecide={decide} disabled={submitting} />
+          <GuardianDecisionCard
+            key="decide"
+            summary={c.guardianEvidenceSummary}
+            messageText={exactMessage}
+            signals={c.analysis?.signals}
+            onDecide={decide}
+            disabled={submitting}
+          />
         )}
       </AnimatePresence>
-
     </main>
+  );
+}
+
+export default function GuardianReviewPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="flex flex-1 items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
+        </main>
+      }
+    >
+      <GuardianReviewContent />
+    </Suspense>
   );
 }

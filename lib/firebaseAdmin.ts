@@ -44,8 +44,19 @@ export async function sendAdminPushNotification(options: {
                 title: options.title,
                 body: options.body,
               },
-              data: options.data || { url: "https://habib-hackathon.vercel.app/dashboard" },
+              data: options.data || { url: "https://habib-hackathon.vercel.app/dashboard", title: options.title, body: options.body },
               webpush: {
+                headers: {
+                  Urgency: "high",
+                },
+                notification: {
+                  title: options.title,
+                  body: options.body,
+                  icon: "https://habib-hackathon.vercel.app/icons/icon-192x192.png",
+                  badge: "https://habib-hackathon.vercel.app/icons/icon-192x192.png",
+                  requireInteraction: "true",
+                  vibrate: [200, 100, 200, 100, 200],
+                },
                 fcm_options: {
                   link: options.data?.url || "https://habib-hackathon.vercel.app/dashboard",
                 },

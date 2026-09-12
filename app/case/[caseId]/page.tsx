@@ -8,7 +8,7 @@ import LanguageToggle from "@/components/LanguageToggle";
 import VerdictBanner from "@/components/VerdictBanner";
 import GuardianQrCode from "@/components/QrCode";
 import { useLang } from "@/lib/i18n";
-import { clearPendingAnalysis } from "@/lib/session";
+import { loadPendingAnalysis, clearPendingAnalysis } from "@/lib/session";
 import type { Case } from "@/lib/types";
 
 export default function CaseWaitingPage() {
@@ -27,12 +27,17 @@ export default function CaseWaitingPage() {
     // effect rather than a lazy useState initializer to avoid a hydration
     // mismatch on the readonly input below.
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setGuardianUrl(`${window.location.origin}/guardian/${caseId}`);
+    const p = loadPendingAnalysis();
+    const query = p?.text ? `?msg=${encodeURIComponent(p.text)}` : "";
+    setGuardianUrl(`${window.location.origin}/guardian/${caseId}${query}`);
 
     const source = new EventSource(`/api/relay/${caseId}/stream`);
     source.onmessage = (evt) => {
       const data = JSON.parse(evt.data) as Case;
       setC(data);
+      if (data.rawInputRef && data.rawInputRef !== "not-stored") {
+        setGuardianUrl(`${window.location.origin}/guardian/${caseId}?msg=${encodeURIComponent(data.rawInputRef)}`);
+      }
     };
     source.addEventListener("config_error", (evt) => {
       const data = JSON.parse((evt as MessageEvent).data) as { error: string };
@@ -49,7 +54,14 @@ export default function CaseWaitingPage() {
           }
           return r.ok ? r.json() : Promise.reject();
         })
-        .then((data) => data && setC(data))
+        .then((data) => {
+          if (data) {
+            setC(data);
+            if (data.rawInputRef && data.rawInputRef !== "not-stored") {
+              setGuardianUrl(`${window.location.origin}/guardian/${caseId}?msg=${encodeURIComponent(data.rawInputRef)}`);
+            }
+          }
+        })
         .catch(() => setNotFound(true));
     };
     return () => source.close();
@@ -168,16 +180,32 @@ export default function CaseWaitingPage() {
             {/* Quick Share Buttons */}
             <div className="grid grid-cols-1 gap-2 pt-1 sm:grid-cols-2">
               {/* WhatsApp 1-tap share */}
-              <a
-                href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
-                  `Assalam-o-Alaikum! Please review this suspicious message request for me on ScamWatch:\n${guardianUrl}`,
-                )}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="tap-target flex items-center justify-center gap-2 rounded-xl bg-[#25D366] px-4 py-3 text-xs sm:text-sm font-bold text-white shadow-sm hover:bg-[#20bd5a] transition-all"
-              >
-                <span>💬 {t("shareWhatsApp")}</span>
-              </a>
+              {(() => {
+                const preview = c.rawInputRef && c.rawInputRef !== "not-stored"
+                  ? (c.rawInputRef.length > 120 ? `${c.rawInputRef.slice(0, 120)}...` : c.rawInputRef)
+                  : "";
+                const shareText = preview
+                  ? (lang === "ur"
+                      ? `السلام علیکم! مجھے یہ پیغام ملا ہے:\n"${preview}"\n\nبراہ کرم چیک کریں کہ یہ محفوظ ہے یا فراڈ:\n${guardianUrl}`
+                      : lang === "roman-ur"
+                        ? `Assalam-o-Alaikum! Mujhe yeh message aaya tha:\n"${preview}"\n\nPlease check karein ke yeh safe hai ya fraud:\n${guardianUrl}`
+                        : `Assalam-o-Alaikum! I received this message:\n"${preview}"\n\nPlease review this for me on ScamWatch:\n${guardianUrl}`)
+                  : (lang === "ur"
+                      ? `السلام علیکم! براہ کرم میرے لیے یہ پیغام چیک کریں:\n${guardianUrl}`
+                      : lang === "roman-ur"
+                        ? `Assalam-o-Alaikum! Please mere liye yeh message check karein:\n${guardianUrl}`
+                        : `Assalam-o-Alaikum! Please review this suspicious message request for me on ScamWatch:\n${guardianUrl}`);
+                return (
+                  <a
+                    href={`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="tap-target flex items-center justify-center gap-2 rounded-xl bg-[#25D366] px-4 py-3 text-xs sm:text-sm font-bold text-white shadow-sm hover:bg-[#20bd5a] transition-all"
+                  >
+                    <span>💬 {t("shareWhatsApp")}</span>
+                  </a>
+                );
+              })()}
 
               {/* Demo Split Screen Helper */}
               <button

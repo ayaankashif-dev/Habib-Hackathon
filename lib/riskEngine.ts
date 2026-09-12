@@ -351,7 +351,7 @@ export async function analyze(text: string, opts: RiskEngineOptions): Promise<An
   };
 }
 
-export function buildGuardianSummary(analysis: AnalysisResult, lang: Lang): string {
+export function buildGuardianSummary(analysis: AnalysisResult, lang: Lang, _rawInput?: string): string {
   const present = analysis.signals.filter((s) => s.present).map((s) => s.type);
   const parts: string[] = [];
   if (present.includes("money_request")) {
@@ -360,27 +360,32 @@ export function buildGuardianSummary(analysis: AnalysisResult, lang: Lang): stri
     );
   }
   if (present.includes("urgency")) {
-    parts.push(lang === "ur" ? "جلدی کا دباؤ ڈالا گیا" : lang === "roman-ur" ? "jaldi ka dabao dala gaya" : "urgency was used");
+    parts.push(lang === "ur" ? "جلدی کا دباؤ ڈالا گیا ہے" : lang === "roman-ur" ? "jaldi ka dabao dala gaya hai" : "urgency was used");
   }
   if (present.includes("impersonation")) {
     parts.push(
-      lang === "ur" ? "کسی اور کے نام پر بات کی گئی" : lang === "roman-ur" ? "kisi aur ke naam par baat ki gayi" : "someone may be impersonated",
+      lang === "ur" ? "کسی اور کے نام پر بات کی گئی ہے" : lang === "roman-ur" ? "kisi aur ke naam par baat ki gayi hai" : "someone may be impersonated",
     );
   }
   if (present.includes("credential_request")) {
     parts.push(
-      lang === "ur" ? "پاسورڈ/او ٹی پی مانگا گیا" : lang === "roman-ur" ? "password/OTP maanga gaya" : "a password/OTP was requested",
+      lang === "ur" ? "پاسورڈ یا او ٹی پی مانگا گیا ہے" : lang === "roman-ur" ? "password ya OTP maanga gaya hai" : "a password/OTP was requested",
+    );
+  }
+  if (present.includes("link")) {
+    parts.push(
+      lang === "ur" ? "مشکوک لنک شامل ہے" : lang === "roman-ur" ? "mashkook link shamil hai" : "a suspicious link was found",
     );
   }
   const joined = parts.length
     ? parts.join(lang === "ur" ? "، " : ", ")
     : lang === "ur"
-      ? "کچھ مشکوک لگا"
+      ? "کچھ غیر معمولی یا مشکوک عناصر ملے ہیں"
       : lang === "roman-ur"
-        ? "kuch mashkook laga"
-        : "something looked suspicious";
+        ? "kuch ghair mamooli ya mashkook cheezein mili hain"
+        : "something suspicious was flagged";
 
-  if (lang === "ur") return `ایک شخص کو پیغام ملا جس میں ${joined}۔ تصدیق درکار ہے۔`;
-  if (lang === "roman-ur") return `Ek shakhs ko message mila jismein ${joined}. Tasdeeq darkar hai.`;
-  return `Someone received a message where ${joined}. Verification needed.`;
+  if (lang === "ur") return `اس پیغام میں ${joined}۔ براہ کرم تصدیق کریں کہ کیا کرنا چاہیے۔`;
+  if (lang === "roman-ur") return `Is message mein ${joined}. Baraye meharbani check karke faisla dein.`;
+  return `In this message, ${joined}. Please review and verify.`;
 }
