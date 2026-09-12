@@ -1,0 +1,393 @@
+"use client";
+
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import type { Lang } from "./types";
+
+type Dict = Record<string, string>;
+
+export const translations: Record<Lang, Dict> = {
+  en: {
+    appName: "SAATHI",
+    tagline: "You don't need to be a tech expert to be safe.",
+    intakeTitle: "Got a message that feels off?",
+    intakeSubtitle: "Paste it here. We'll check it for you.",
+    tryExample: "Or try an example",
+    scenarioEmergency: "Fake emergency call",
+    scenarioJob: "Fake job offer",
+    scenarioBank: "Fake bank alert",
+    inputPlaceholder: "Paste the message here...",
+    uploadScreenshot: "Upload a screenshot",
+    recordVoice: "Record a voice note",
+    uploadVoiceNote: "Upload a voice note",
+    stopRecording: "Stop recording",
+    reading: "Reading image...",
+    listening: "Listening...",
+    transcribing: "Transcribing voice note...",
+    transcriptionUnavailable: "Voice file transcription isn't set up. Try recording instead.",
+    checkButton: "Check this now",
+    checking: "Checking...",
+    back: "Back",
+    resultSafeTitle: "This looks SAFE",
+    resultCheckTitle: "BE CAREFUL",
+    resultStopTitle: "STOP",
+    resultSafeDesc: "We didn't find danger signs. Still, stay careful.",
+    signal_money_request: "Money request",
+    signal_urgency: "Urgency",
+    signal_secrecy: "Secrecy",
+    signal_impersonation: "Pretending to be someone",
+    signal_link: "Suspicious link",
+    signal_credential_request: "Asking for password/OTP/ID",
+    whyFlagged: "Why was this flagged?",
+    lesson_money_request: "Scammers often ask for money before you have time to check if the story is even true.",
+    lesson_urgency: "Feeling rushed is a warning sign. A real emergency still allows a minute to verify.",
+    lesson_secrecy: "Being told to keep it secret stops you from asking anyone else for help.",
+    lesson_impersonation: "Scammers pretend to be someone you trust — family, your bank, or your boss.",
+    lesson_link: "An unexpected link can lead to a fake website built to steal your information.",
+    lesson_credential_request: "No real bank or company ever asks for your OTP, password, or ID number in a chat.",
+    askTrustedPerson: "Ask my trusted person",
+    iKnowSafe: "I know this is safe",
+    startOver: "Check another message",
+    waitingTitle: "Waiting for your trusted person...",
+    waitingSubtitle: "We sent them a short, private summary. Please wait.",
+    shareLinkLabel: "Guardian link (share or open on another device)",
+    copyLink: "Copy link",
+    copied: "Copied!",
+    openGuardianView: "Open Guardian view",
+    guardianRespondedStop: "Your trusted person says STOP.",
+    guardianRespondedSafe: "Your trusted person says it's SAFE.",
+    guardianNoMoneySent: "No money was sent. Good job checking first.",
+    guardianOkProceed: "You can proceed, but always stay alert.",
+    markedSafeByYou: "You marked this as safe.",
+    guardianTitle: "Someone trusts you to help",
+    guardianSubtitle: "Here is a short, private summary. No full message is shown.",
+    evidenceSummary: "What happened",
+    guardianStop: "STOP IT",
+    guardianSafe: "IT'S SAFE",
+    guardianThanks: "Thanks! We told them your decision.",
+    guardianAlreadyDecided: "This case is already resolved.",
+    caseNotFound: "This case could not be found.",
+    setupRequired: "Backend setup needed: run the one-time Supabase SQL step (see README) and reload.",
+    playVerdict: "Play out loud",
+    languageLabel: "Language",
+    footerNote: "SAATHI is a decision-protection assistant, not a legal or financial authority.",
+    aiUnavailable: "Couldn't fully analyze — please ask your trusted person.",
+    home: "Home",
+    repeatedPatternNotice: "You've seen a message like this before on this device.",
+    tabText: "Text / Message",
+    tabScreenshot: "Screenshot (OCR)",
+    tabVoice: "Voice Note",
+    shareWhatsApp: "Send via WhatsApp",
+    openSplit: "Open Guardian in New Window",
+    dropScreenshot: "Drop screenshot here or tap to browse",
+    pasteClipboard: "Paste",
+    clearText: "Clear",
+    liveListening: "Listening live... Speak now",
+    qrShowLabel: "Show QR Code",
+    qrHideLabel: "Hide QR Code",
+    qrScanInstruction: "Scan with Guardian's phone",
+    guardianProfileTitle: "Save Trusted Person",
+    guardianProfileSubtitle: "Save their name and WhatsApp number once. Your message is never sent to them — only a link.",
+    guardianNameLabel: "Their name",
+    guardianPhoneLabel: "WhatsApp number",
+    saveGuardian: "Save",
+    editGuardianProfile: "Edit trusted person",
+    setGuardianProfile: "Add trusted person",
+    removeGuardian: "Remove",
+    askOnWhatsAppTemplate: "Ask {name} on WhatsApp",
+    warnFamilyGroup: "Warn Family Group",
+    fraudAlertTitle: "SAATHI Fraud Alert",
+    fraudAlertWarning: "Do not send money or share OTPs",
+    shareAsImage: "Share as Image",
+    shareAsText: "Share as Text",
+    downloadImage: "Download",
+    generatingCard: "Preparing card...",
+    closeModal: "Close",
+    listenGreeting: "Listen",
+    stopGreeting: "Stop",
+    welcomeGreeting:
+      "Assalam-o-Alaikum! If you have a suspicious message, press the mic button and speak, or upload a photo.",
+    emergencyHelplines: "Emergency Helplines",
+    fiaCyber: "FIA Cybercrime Helpline",
+    sbpFraud: "State Bank of Pakistan Fraud Assistance",
+    easypaisaHelp: "Easypaisa Fraud Helpline",
+    jazzcashHelp: "JazzCash Fraud Helpline",
+    callNow: "Call now",
+    helplineDisclaimer:
+      "Numbers as publicly listed. If unreachable, ask your bank/provider for their current fraud line.",
+  },
+  ur: {
+    appName: "ساتھی",
+    tagline: "محفوظ رہنے کے لیے آپ کو ماہر بننے کی ضرورت نہیں۔",
+    intakeTitle: "کوئی مشکوک پیغام ملا؟",
+    intakeSubtitle: "یہاں لگائیں، ہم آپ کے لیے چیک کرتے ہیں۔",
+    tryExample: "یا ایک مثال آزمائیں",
+    scenarioEmergency: "جعلی ایمرجنسی کال",
+    scenarioJob: "جعلی نوکری کی آفر",
+    scenarioBank: "جعلی بینک الرٹ",
+    inputPlaceholder: "پیغام یہاں لگائیں...",
+    uploadScreenshot: "اسکرین شاٹ اپلوڈ کریں",
+    recordVoice: "وائس نوٹ ریکارڈ کریں",
+    uploadVoiceNote: "وائس نوٹ اپلوڈ کریں",
+    stopRecording: "ریکارڈنگ روکیں",
+    reading: "تصویر پڑھی جا رہی ہے...",
+    listening: "سن رہا ہے...",
+    transcribing: "وائس نوٹ سنا جا رہا ہے...",
+    transcriptionUnavailable: "وائس فائل ٹرانسکرپشن سیٹ اپ نہیں ہے۔ براہ کرم ریکارڈ کریں۔",
+    checkButton: "ابھی چیک کریں",
+    checking: "چیک ہو رہا ہے...",
+    back: "واپس",
+    resultSafeTitle: "یہ محفوظ لگتا ہے",
+    resultCheckTitle: "احتیاط کریں",
+    resultStopTitle: "رک جائیں",
+    resultSafeDesc: "کوئی خطرے کی علامت نہیں ملی۔ پھر بھی محتاط رہیں۔",
+    signal_money_request: "پیسے مانگے جا رہے ہیں",
+    signal_urgency: "جلدی کا دباؤ",
+    signal_secrecy: "کسی کو نہ بتانے کا کہنا",
+    signal_impersonation: "کسی اور کے نام پر بات",
+    signal_link: "مشکوک لنک",
+    signal_credential_request: "پاسورڈ/او ٹی پی/شناخت مانگی جا رہی ہے",
+    whyFlagged: "یہ کیوں نشان زد ہوا؟",
+    lesson_money_request: "فراڈی اکثر پیسے مانگتے ہیں اس سے پہلے کہ آپ کہانی کی تصدیق کر سکیں۔",
+    lesson_urgency: "جلدی کا احساس ایک خطرے کی علامت ہے۔ اصل ایمرجنسی میں بھی تصدیق کا وقت ہوتا ہے۔",
+    lesson_secrecy: "راز رکھنے کو کہنا آپ کو کسی اور سے مدد مانگنے سے روکتا ہے۔",
+    lesson_impersonation: "فراڈی اکثر کسی قابلِ اعتماد شخص کا روپ دھارتے ہیں — گھر والے، بینک، یا باس۔",
+    lesson_link: "ایک غیر متوقع لنک آپ کی معلومات چرانے کے لیے بنائی گئی جعلی ویب سائٹ پر لے جا سکتا ہے۔",
+    lesson_credential_request: "کوئی حقیقی بینک یا کمپنی کبھی چیٹ میں او ٹی پی، پاسورڈ، یا شناختی نمبر نہیں مانگتی۔",
+    askTrustedPerson: "اپنے قابلِ اعتماد شخص سے پوچھیں",
+    iKnowSafe: "مجھے پتہ ہے یہ محفوظ ہے",
+    startOver: "دوسرا پیغام چیک کریں",
+    waitingTitle: "آپ کے قابلِ اعتماد شخص کا انتظار ہے...",
+    waitingSubtitle: "ہم نے انہیں ایک مختصر، نجی خلاصہ بھیجا ہے۔ براہ کرم انتظار کریں۔",
+    shareLinkLabel: "گارڈین لنک (شیئر کریں یا دوسرے آلے پر کھولیں)",
+    copyLink: "لنک کاپی کریں",
+    copied: "کاپی ہو گیا!",
+    openGuardianView: "گارڈین ویو کھولیں",
+    guardianRespondedStop: "آپ کے قابلِ اعتماد شخص نے کہا: رک جائیں۔",
+    guardianRespondedSafe: "آپ کے قابلِ اعتماد شخص نے کہا: یہ محفوظ ہے۔",
+    guardianNoMoneySent: "کوئی پیسے نہیں بھیجے گئے۔ پہلے چیک کرنا اچھا فیصلہ تھا۔",
+    guardianOkProceed: "آپ آگے بڑھ سکتے ہیں، لیکن ہمیشہ محتاط رہیں۔",
+    markedSafeByYou: "آپ نے اسے محفوظ قرار دیا۔",
+    guardianTitle: "کسی کو آپ پر بھروسہ ہے",
+    guardianSubtitle: "یہ ایک مختصر، نجی خلاصہ ہے۔ پورا پیغام نہیں دکھایا جاتا۔",
+    evidenceSummary: "کیا ہوا",
+    guardianStop: "روک دیں",
+    guardianSafe: "محفوظ ہے",
+    guardianThanks: "شکریہ! ہم نے انہیں آپ کا فیصلہ بتا دیا ہے۔",
+    guardianAlreadyDecided: "اس کیس کا فیصلہ ہو چکا ہے۔",
+    caseNotFound: "یہ کیس نہیں ملا۔",
+    playVerdict: "بلند آواز سے سنیں",
+    languageLabel: "زبان",
+    footerNote: "ساتھی ایک فیصلہ-حفاظتی معاون ہے، قانونی یا مالی ادارہ نہیں۔",
+    aiUnavailable: "پوری طرح جانچ نہیں ہو سکی — براہ کرم اپنے قابلِ اعتماد شخص سے پوچھیں۔",
+    home: "گھر",
+    repeatedPatternNotice: "آپ اس ڈیوائس پر پہلے بھی ایسا پیغام دیکھ چکے ہیں۔",
+    tabText: "تحریر / میسج",
+    tabScreenshot: "اسکرین شاٹ",
+    tabVoice: "وائس نوٹ",
+    shareWhatsApp: "واٹس ایپ پر بھیجیں",
+    openSplit: "گارڈین اسکرین نئی ونڈو میں کھولیں",
+    dropScreenshot: "اسکرین شاٹ یہاں لگائیں یا منتخب کریں",
+    pasteClipboard: "پیسٹ کریں",
+    clearText: "صاف کریں",
+    liveListening: "آواز سنی جا رہی ہے... بولیں",
+    qrShowLabel: "کیو آر کوڈ دکھائیں",
+    qrHideLabel: "کیو آر کوڈ چھپائیں",
+    qrScanInstruction: "گارڈین کے فون سے اسکین کریں",
+    guardianProfileTitle: "قابلِ اعتماد شخص محفوظ کریں",
+    guardianProfileSubtitle: "ان کا نام اور واٹس ایپ نمبر ایک بار محفوظ کریں۔ آپ کا پیغام کبھی نہیں بھیجا جاتا — صرف ایک لنک۔",
+    guardianNameLabel: "ان کا نام",
+    guardianPhoneLabel: "واٹس ایپ نمبر",
+    saveGuardian: "محفوظ کریں",
+    editGuardianProfile: "قابلِ اعتماد شخص تبدیل کریں",
+    setGuardianProfile: "قابلِ اعتماد شخص شامل کریں",
+    removeGuardian: "ہٹا دیں",
+    askOnWhatsAppTemplate: "{name} سے واٹس ایپ پر پوچھیں",
+    warnFamilyGroup: "خاندانی گروپ کو خبردار کریں",
+    fraudAlertTitle: "ساتھی فراڈ الرٹ",
+    fraudAlertWarning: "پیسے نہ بھیجیں یا او ٹی پی شیئر نہ کریں",
+    shareAsImage: "تصویر کے طور پر بھیجیں",
+    shareAsText: "متن کے طور پر بھیجیں",
+    downloadImage: "ڈاؤن لوڈ کریں",
+    generatingCard: "کارڈ تیار ہو رہا ہے...",
+    closeModal: "بند کریں",
+    listenGreeting: "سنیں",
+    stopGreeting: "روکیں",
+    welcomeGreeting: "السلام علیکم! اگر کوئی مشکوک پیغام ملا ہے تو مائیک کا بٹن دبا کر بولیں یا تصویر اپلوڈ کریں۔",
+    emergencyHelplines: "ہنگامی ہیلپ لائنز",
+    fiaCyber: "ایف آئی اے سائبر کرائم ہیلپ لائن",
+    sbpFraud: "سٹیٹ بینک آف پاکستان فراڈ اسسٹنس",
+    easypaisaHelp: "ایزی پیسہ فراڈ ہیلپ لائن",
+    jazzcashHelp: "جاز کیش فراڈ ہیلپ لائن",
+    callNow: "ابھی کال کریں",
+    helplineDisclaimer: "نمبر عوامی فہرست کے مطابق ہیں۔ اگر رابطہ نہ ہو تو اپنے بینک/ادارے سے موجودہ فراڈ لائن پوچھیں۔",
+  },
+  "roman-ur": {
+    appName: "SAATHI",
+    tagline: "Mehfooz rehne ke liye expert banna zaroori nahi.",
+    intakeTitle: "Koi mashkook message mila?",
+    intakeSubtitle: "Yahan paste karein, hum aapke liye check karte hain.",
+    tryExample: "Ya ek example try karein",
+    scenarioEmergency: "Jaali emergency call",
+    scenarioJob: "Jaali job offer",
+    scenarioBank: "Jaali bank alert",
+    inputPlaceholder: "Message yahan paste karein...",
+    uploadScreenshot: "Screenshot upload karein",
+    recordVoice: "Voice note record karein",
+    uploadVoiceNote: "Voice note upload karein",
+    stopRecording: "Recording roken",
+    reading: "Tasveer parhi ja rahi hai...",
+    listening: "Sun raha hai...",
+    transcribing: "Voice note suna ja raha hai...",
+    transcriptionUnavailable: "Voice file transcription set up nahi hai. Record karke try karein.",
+    checkButton: "Abhi check karein",
+    checking: "Check ho raha hai...",
+    back: "Wapas",
+    resultSafeTitle: "Yeh SAFE lagta hai",
+    resultCheckTitle: "EHTIYAT KAREIN",
+    resultStopTitle: "RUK JAYEN",
+    resultSafeDesc: "Koi khatre ki nishani nahi mili. Phir bhi ehtiyat karein.",
+    signal_money_request: "Paise maange ja rahe hain",
+    signal_urgency: "Jaldi ka dabao",
+    signal_secrecy: "Kisi ko na batane ko kaha",
+    signal_impersonation: "Kisi aur ke naam par baat",
+    signal_link: "Mashkook link",
+    signal_credential_request: "Password/OTP/ID maanga ja raha hai",
+    whyFlagged: "Yeh kyun flag hua?",
+    lesson_money_request: "Scammers aksar paise maangte hain is se pehle ke aap kahani ki tasdeeq kar sakein.",
+    lesson_urgency: "Jaldi ka ehsaas ek khatre ki nishani hai. Asal emergency mein bhi tasdeeq ka waqt hota hai.",
+    lesson_secrecy: "Raaz rakhne ko kehna aapko kisi aur se madad maangne se rokta hai.",
+    lesson_impersonation: "Scammers aksar kisi trusted shakhs ka roop dharte hain — ghar wale, bank, ya boss.",
+    lesson_link: "Ek ghair mutawaqqa link aapki maloomat churane wali jaali website par le ja sakta hai.",
+    lesson_credential_request: "Koi bhi asli bank ya company chat mein kabhi OTP, password, ya ID number nahi maangti.",
+    askTrustedPerson: "Apne trusted person se poochein",
+    iKnowSafe: "Mujhe pata hai yeh safe hai",
+    startOver: "Doosra message check karein",
+    waitingTitle: "Aapke trusted person ka intezaar hai...",
+    waitingSubtitle: "Humne unhe ek chhota, private summary bheja hai. Intezaar karein.",
+    shareLinkLabel: "Guardian link (share karein ya doosre device par kholein)",
+    copyLink: "Link copy karein",
+    copied: "Copy ho gaya!",
+    openGuardianView: "Guardian view kholein",
+    guardianRespondedStop: "Aapke trusted person ne kaha: RUK JAYEN.",
+    guardianRespondedSafe: "Aapke trusted person ne kaha: yeh SAFE hai.",
+    guardianNoMoneySent: "Koi paisa nahi bheja gaya. Pehle check karna sahi tha.",
+    guardianOkProceed: "Aap aage barh sakte hain, lekin hamesha alert rahein.",
+    markedSafeByYou: "Aapne isse safe qarar diya.",
+    guardianTitle: "Kisi ko aap par bharosa hai",
+    guardianSubtitle: "Yeh ek chhota, private summary hai. Poora message nahi dikhaya jata.",
+    evidenceSummary: "Kya hua",
+    guardianStop: "ROK DEIN",
+    guardianSafe: "SAFE HAI",
+    guardianThanks: "Shukriya! Humne unhe aapka faisla bata diya hai.",
+    guardianAlreadyDecided: "Is case ka faisla ho chuka hai.",
+    caseNotFound: "Yeh case nahi mila.",
+    playVerdict: "Bulund awaaz mein sunein",
+    languageLabel: "Zabaan",
+    footerNote: "SAATHI ek faisla-hifazati madadgar hai, qanooni ya maali idara nahi.",
+    aiUnavailable: "Poori tarah jaanch nahi ho saki — apne trusted person se poochein.",
+    home: "Home",
+    repeatedPatternNotice: "Aapne pehle bhi aisa message is device par dekha hai.",
+    tabText: "Text / Message",
+    tabScreenshot: "Screenshot (OCR)",
+    tabVoice: "Voice Note",
+    shareWhatsApp: "WhatsApp par bhejein",
+    openSplit: "Nayi window mein Guardian view kholein",
+    dropScreenshot: "Screenshot yahan lagayein ya browse karein",
+    pasteClipboard: "Paste karein",
+    clearText: "Clear karein",
+    liveListening: "Awaaz sun rahe hain... boliye",
+    qrShowLabel: "QR Code dikhayen",
+    qrHideLabel: "QR Code chupayen",
+    qrScanInstruction: "Guardian ke phone se scan karein",
+    guardianProfileTitle: "Trusted Person Save Karein",
+    guardianProfileSubtitle: "Unka naam aur WhatsApp number ek baar save karein. Aapka message kabhi nahi bheja jata — sirf ek link.",
+    guardianNameLabel: "Unka naam",
+    guardianPhoneLabel: "WhatsApp number",
+    saveGuardian: "Save karein",
+    editGuardianProfile: "Trusted person tabdeel karein",
+    setGuardianProfile: "Trusted person add karein",
+    removeGuardian: "Hata dein",
+    askOnWhatsAppTemplate: "{name} se WhatsApp par poochein",
+    warnFamilyGroup: "Family Group ko Warn Karein",
+    fraudAlertTitle: "SAATHI Fraud Alert",
+    fraudAlertWarning: "Paise na bhejein ya OTP share na karein",
+    shareAsImage: "Image ke taur par share karein",
+    shareAsText: "Text ke taur par share karein",
+    downloadImage: "Download karein",
+    generatingCard: "Card tayar ho raha hai...",
+    closeModal: "Band karein",
+    listenGreeting: "Sunein",
+    stopGreeting: "Roken",
+    welcomeGreeting: "Assalam-o-Alaikum! Agar koi mashkook message mila hai to mic ka button daba kar bolen ya photo upload karen.",
+    emergencyHelplines: "Emergency Helplines",
+    fiaCyber: "FIA Cybercrime Helpline",
+    sbpFraud: "State Bank of Pakistan Fraud Assistance",
+    easypaisaHelp: "Easypaisa Fraud Helpline",
+    jazzcashHelp: "JazzCash Fraud Helpline",
+    callNow: "Abhi call karein",
+    helplineDisclaimer: "Numbers publicly listed hain. Agar rabta na ho to apne bank/provider se current fraud line poochein.",
+  },
+};
+
+interface LanguageContextValue {
+  lang: Lang;
+  setLang: (l: Lang) => void;
+  t: (key: string) => string;
+}
+
+const LanguageContext = createContext<LanguageContextValue | null>(null);
+
+const STORAGE_KEY = "saathi:lang";
+
+export function LanguageProvider({ children }: { children: React.ReactNode }) {
+  const [lang, setLangState] = useState<Lang>("roman-ur");
+
+  useEffect(() => {
+    // Deliberately deferred to an effect (not a lazy useState initializer):
+    // SSR has no localStorage, so the first client render must match the
+    // server's "roman-ur" default before this syncs in the real value.
+    try {
+      const stored = window.localStorage.getItem(STORAGE_KEY) as Lang | null;
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      if (stored && translations[stored]) setLangState(stored);
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  const setLang = (l: Lang) => {
+    setLangState(l);
+    try {
+      window.localStorage.setItem(STORAGE_KEY, l);
+    } catch {
+      // ignore
+    }
+  };
+
+  const t = useMemo(() => {
+    return (key: string) => translations[lang][key] ?? translations.en[key] ?? key;
+  }, [lang]);
+
+  const value = useMemo(() => ({ lang, setLang, t }), [lang, t]);
+
+  return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;
+}
+
+export function useLang() {
+  const ctx = useContext(LanguageContext);
+  if (!ctx) throw new Error("useLang must be used within LanguageProvider");
+  return ctx;
+}
+
+export function speak(text: string, lang: Lang) {
+  if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+  try {
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = lang === "ur" ? "ur-PK" : lang === "roman-ur" ? "ur-PK" : "en-US";
+    utter.rate = 0.95;
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utter);
+  } catch {
+    // ignore
+  }
+}

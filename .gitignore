@@ -32,6 +32,11 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
+
+
+# tesseract.js downloads its trained-data model to the cwd on first OCR call
+*.traineddata
 
 # vercel
 .vercel
